@@ -109,6 +109,10 @@ Image LoadBMP(const Path& file) {
     for (int y = h - 1; y >= 0; --y) {
         Color* line = result.GetLine(y);
         ifs.read(buff.data(), padding);
+        
+        if (ifs.fail()) {
+            return {};
+        }
 
         for (int x = 0; x < w; ++x) {
             line[x].b = static_cast<byte>(buff[x * 3 + 0]);
