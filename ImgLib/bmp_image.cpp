@@ -89,13 +89,13 @@ Image LoadBMP(const Path& file) {
 
     ifs.read((char *) &file_header_, sizeof(BitmapFileHeader));
     
-    if (file_header_.bitmapSignatureBytes[0] != 'B' || file_header_.bitmapSignatureBytes[1] != 'M') {
+    if (ifs.fail() || file_header_.bitmapSignatureBytes[0] != 'B' || file_header_.bitmapSignatureBytes[1] != 'M') {
         return {};
     }
     
     ifs.read((char *) &info_header_, sizeof(BitmapInfoHeader));
     
-    if (info_header_.width_ < 0 || info_header_.height_ < 0) {
+    if (ifs.fail() || info_header_.width_ < 0 || info_header_.height_ < 0) {
         return {};
     }
 
