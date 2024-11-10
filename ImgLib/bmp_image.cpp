@@ -10,8 +10,13 @@ using namespace std;
 
 namespace img_lib {
     
+inline static int BYTES_PER_PIXEL = 3;
+inline static int PADDING_FOR_ROUNDING = 3;
+inline static int ALIGMENT = 4;
+    
 static int GetBMPStride(int w) {
-    return 4 * ((w * 3 + 3) / 4);
+    int unalignedStride = w * BYTES_PER_PIXEL;
+    return ALIGMENT * ((unalignedStride + PADDING_FOR_ROUNDING) / ALIGMENT);
 }    
     
 PACKED_STRUCT_BEGIN BitmapFileHeader {
@@ -78,8 +83,17 @@ Image LoadBMP(const Path& file) {
     BitmapInfoHeader info_header_;
     ifstream ifs(file, ios::binary);
 
-    ifs.read((char *) &file_header_, 14);
-    ifs.read((char *) &info_header_, 40);
+    ifs.read((char *) &file_header_, sizeof(BitmapFileHeader));
+    
+    if (file_header_.bitmapSignatureBytes[0] != 'B' || file_header_.bitmapSignatureBytes[1] != 'M') {
+        return {};
+    }
+    
+    ifs.read((char *) &info_header_, sizeof(BitmapInfoHeader));
+    
+    if (info_header_.width_ < 0 || info_header_.height_ < 0) {
+        return {};
+    }
 
     int w, h, padding;
     w = info_header_.width_;
