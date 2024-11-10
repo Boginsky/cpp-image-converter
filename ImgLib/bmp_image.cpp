@@ -82,6 +82,10 @@ Image LoadBMP(const Path& file) {
     BitmapFileHeader file_header_;
     BitmapInfoHeader info_header_;
     ifstream ifs(file, ios::binary);
+    
+    if (!ifs || ifs.fail()) {
+        return {};
+    }
 
     ifs.read((char *) &file_header_, sizeof(BitmapFileHeader));
     
